@@ -9,8 +9,8 @@ public class Player : MonoBehaviour
     public float moveSpeed = 7f;
     private bool facingRight = true;
 
-    public float jumpSpeed = 10f;
-    public float doubleJumpSpeed = 8f;
+    public float jumpSpeed = 15f;
+    public float doubleJumpSpeed = 10f;
     public bool isGround = true;
     bool canDoubleJump;
 
@@ -33,37 +33,51 @@ public class Player : MonoBehaviour
     {
         movement = Input.GetAxis("Horizontal");
 
-        if (movement < 0f && facingRight && !isTouchingWallRight)
+        if (movement < 0f && facingRight)
         {
             transform.eulerAngles = new Vector3(0f, -180f, 0f);
             facingRight = false;
         }
-        else if (movement > 0f && !facingRight && !isTouchingWallLeft)
+        else if (movement > 0f && !facingRight)
         {
             transform.eulerAngles = new Vector3(0f, 0f, 0f);
             facingRight = true;
         }
 
         //Salto
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             if (isGround)
             {
-                animator.SetBool("Jump", true);
-                canDoubleJump = true;
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpSpeed);
+                canDoubleJump = true;
                 isGround = false;
+                animator.SetBool("Jump", true);
             }
-            else
+            else if (canDoubleJump && !wallSliding)
             {
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    animator.SetBool("Jump", false);
-                    animator.SetBool("DoubleJump", true);
-                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpSpeed);
-                    canDoubleJump = false;
-                    isGround = false;
-                }
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpSpeed);
+                canDoubleJump = false;
+                animator.SetBool("DoubleJump", true);
+            }
+            else if (wallSliding)
+            {
+                //float direction = isTouchingWallRight ? -1 : 1;
+                //rb.linearVelocity = new Vector2(direction * 8f, jumpSpeed);
+                //wallSliding = false;
+                //animator.SetBool("Jump", true);
+                float direction = isTouchingWallRight ? -1 : 1;
+
+                // Aplicar fuerza diagonal (m�s horizontal que vertical si quieres que rebote fuerte hacia el lado)
+                rb.linearVelocity = new Vector2(direction * 10f, jumpSpeed * 0.8f);
+
+                // Gira al personaje hacia la direcci�n del salto
+                facingRight = direction > 0;
+                transform.eulerAngles = facingRight ? new Vector3(0f, 0f, 0f) : new Vector3(0f, -180f, 0f);
+
+                wallSliding = false;
+                canDoubleJump = true; // si quieres permitir doble salto despu�s de wall jump
+                animator.SetBool("Jump", true);
             }
         }
 
@@ -107,8 +121,12 @@ public class Player : MonoBehaviour
 
         if (wallSliding)
         {
-            animator.Play("Player_Wall");
+            animator.SetBool("Wall", true);
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Clamp(rb.linearVelocity.y, -wallSlidingSpeed, float.MaxValue));
+        }
+        else
+        {
+            animator.SetBool("Wall", false);
         }
     }
 
@@ -124,9 +142,12 @@ public class Player : MonoBehaviour
         if (collision.gameObject.tag == "Ground")
         {
             isGround = true;
+            canDoubleJump = true;
             animator.SetBool("Jump", false);
             animator.SetBool("DoubleJump", false);
             animator.SetBool("Fall", false);
+            animator.SetBool("Wall", false);
+
         }
     }
 
@@ -136,12 +157,14 @@ public class Player : MonoBehaviour
         {
             isTouchingFront = true;
             isTouchingWallRight = true;
+            animator.SetBool("Fall", false);
         }
 
         if (collision.gameObject.tag == "LeftWall")
         {
             isTouchingFront = true;
             isTouchingWallLeft = true;
+            animator.SetBool("Fall", false);
         }
     }
 
