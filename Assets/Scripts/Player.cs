@@ -1,9 +1,13 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public Rigidbody2D rb;
+
+    public int maxHealth = 3;
+    public Text health;
 
     private float movement = 0f;
     public float moveSpeed = 7f;
@@ -20,6 +24,12 @@ public class Player : MonoBehaviour
     bool isTouchingWallRight;
     bool isTouchingWallLeft;
 
+    public Transform attackPoint;
+    public float attackRadious = 1.7f;
+    public LayerMask attackLayer;
+
+    public bool touchNextLevel = false;
+
     public Animator animator;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -31,6 +41,13 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(maxHealth <= 0)
+        {
+            Die();
+        }
+
+        health.text = maxHealth.ToString();
+
         movement = Input.GetAxis("Horizontal");
 
         if (movement < 0f && facingRight)
@@ -67,6 +84,7 @@ public class Player : MonoBehaviour
                 //wallSliding = false;
                 //animator.SetBool("Jump", true);
                 float direction = isTouchingWallRight ? -1 : 1;
+                isTouchingWallLeft = !isTouchingWallRight;
 
                 // Aplicar fuerza diagonal (m�s horizontal que vertical si quieres que rebote fuerte hacia el lado)
                 rb.linearVelocity = new Vector2(direction * 10f, jumpSpeed * 0.8f);
@@ -147,7 +165,12 @@ public class Player : MonoBehaviour
             animator.SetBool("DoubleJump", false);
             animator.SetBool("Fall", false);
             animator.SetBool("Wall", false);
+        }
 
+        if(collision.gameObject.tag == "Next Level")
+        {
+            MainMenu menu = gameObject.AddComponent<MainMenu>();
+            menu.ChangeScene("Demo");
         }
     }
 
@@ -166,6 +189,11 @@ public class Player : MonoBehaviour
             isTouchingWallLeft = true;
             animator.SetBool("Fall", false);
         }
+
+        if(collision.gameObject.tag == "")
+        {
+            touchNextLevel = true;
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -173,5 +201,39 @@ public class Player : MonoBehaviour
         isTouchingFront = false;
         isTouchingWallRight = false;
         isTouchingWallLeft = false;
+    }
+
+    public void Attack()
+    {
+        Collider2D collInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadious, attackLayer);
+        if (collInfo)
+        {
+            Debug.Log(collInfo.gameObject.name + " takes damage");
+        }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if(attackPoint == null)
+        {
+            return;
+        }
+
+        Gizmos.DrawWireSphere(attackPoint.position, attackRadious);
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (maxHealth <= 0)
+        {
+            return;
+        }
+
+        maxHealth -= damage;
+    }
+
+    void Die()
+    {
+        Debug.Log("Player died");
     }
 }
