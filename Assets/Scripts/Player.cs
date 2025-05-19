@@ -42,6 +42,7 @@ public class Player : MonoBehaviour
     public Animator animator;
 
     public GameObject gameOverUI;
+    public GameObject pauseMenuUI;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -157,6 +158,26 @@ public class Player : MonoBehaviour
         {
             animator.SetBool("Wall", false);
         }
+
+        //Menu Pausa
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (gameOverUI.activeSelf)
+            {
+                gameOverUI.SetActive(false);
+                Time.timeScale = 1;
+            }
+            else if (pauseMenuUI.activeSelf)
+            {
+                pauseMenuUI.SetActive(false);
+                Time.timeScale = 1;
+            }
+            else
+            {
+                pauseMenuUI.SetActive(true);
+                Time.timeScale = 0;
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -271,6 +292,5 @@ public class Player : MonoBehaviour
         Time.timeScale = 0;
         FindAnyObjectByType<GameManager>().isGameActive = false;
         Destroy(this.gameObject);
-
     }
 }
