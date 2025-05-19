@@ -41,8 +41,17 @@ public class Player : MonoBehaviour
 
     public Animator animator;
 
+    [Header("UI")]
     public GameObject gameOverUI;
     public GameObject pauseMenuUI;
+
+    [Header("Audio")]
+    public AudioManager audioManager;
+
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -73,6 +82,18 @@ public class Player : MonoBehaviour
             facingRight = true;
         }
 
+        // --- PASOS EN BUCLE ---
+        if (Math.Abs(movement) > 0.1f && isGround)
+        {
+            audioManager.PlayStepsLoop();
+            animator.SetFloat("Run", 1f);
+        }
+        else
+        {
+            audioManager.StopStepsLoop();
+            animator.SetFloat("Run", 0f);
+        }
+
         //Salto
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -82,32 +103,26 @@ public class Player : MonoBehaviour
                 canDoubleJump = true;
                 isGround = false;
                 animator.SetBool("Jump", true);
+                audioManager.PlaySFX(audioManager.jump, 1f); // Usa la versión que permite superposición
             }
             else if (canDoubleJump && !wallSliding)
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpSpeed);
                 canDoubleJump = false;
                 animator.SetBool("DoubleJump", true);
+                audioManager.PlaySFX(audioManager.jump, 1f);
             }
             else if (wallSliding)
             {
-                //float direction = isTouchingWallRight ? -1 : 1;
-                //rb.linearVelocity = new Vector2(direction * 8f, jumpSpeed);
-                //wallSliding = false;
-                //animator.SetBool("Jump", true);
                 float direction = isTouchingWallRight ? -1 : 1;
                 isTouchingWallLeft = !isTouchingWallRight;
-
-                // Aplicar fuerza diagonal (m�s horizontal que vertical si quieres que rebote fuerte hacia el lado)
                 rb.linearVelocity = new Vector2(direction * 10f, jumpSpeed * 0.8f);
-
-                // Gira al personaje hacia la direcci�n del salto
                 facingRight = direction > 0;
                 transform.eulerAngles = facingRight ? new Vector3(0f, 0f, 0f) : new Vector3(0f, -180f, 0f);
-
                 wallSliding = false;
-                canDoubleJump = true; // si quieres permitir doble salto despu�s de wall jump
+                canDoubleJump = true;
                 animator.SetBool("Jump", true);
+                audioManager.PlaySFX(audioManager.jump, 1f);
             }
         }
 
@@ -126,10 +141,12 @@ public class Player : MonoBehaviour
         //Correr
         if (Math.Abs(movement) > .1f)
         {
+            //audioManager.PlaySFX(audioManager.steps);
             animator.SetFloat("Run", 1f);
         }
         else if (movement < .1f)
         {
+            //audioManager.PlaySFX(audioManager.steps);
             animator.SetFloat("Run", 0f);
         }
 
@@ -137,12 +154,16 @@ public class Player : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             animator.SetTrigger("Attack");
+            //audioManager.PlaySFX(audioManager.sword);
+            //audioManager.PlaySFX(audioManager.sword, 1f);
         }
 
         //Deslizarse pared
         if (isTouchingFront && !isGround)
         {
             wallSliding = true;
+            //audioManager.PlaySFX(audioManager.wallSlide);
+            //audioManager.PlaySFX(audioManager.wallSlide, 1f);
         }
         else
         {
@@ -248,6 +269,16 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void PlaySwordSound()
+    {
+        audioManager.PlaySFX(audioManager.sword, 1f);
+    }
+
+    public void PlayWallSlideSound()
+    {
+        audioManager.PlaySFX(audioManager.wallSlide, 1f);
+    }
+
     void OnDrawGizmosSelected()
     {
         if(attackPoint == null)
@@ -273,6 +304,8 @@ public class Player : MonoBehaviour
         //TODO: cambiar para el resto de monedas que den habilidades. Por ahora sólo está para una y no hace nada
         if(other.gameObject.tag == "Coin")
         {
+            //audioManager.PlaySFX(audioManager.coin);
+            audioManager.PlaySFX(audioManager.coin, 1f);
             currentCoin += 1;
             other.gameObject.transform.GetChild(0).GetComponent<Animator>().SetTrigger("Collected");            
             Destroy(other.gameObject, 1f);
@@ -288,6 +321,11 @@ public class Player : MonoBehaviour
     void Die()
     {
         Debug.Log("Player died");
+        audioManager.PlaySFX(audioManager.death, 1f);
+        audioManager.StopMusic();
+        //audioManager.PlaySFX(audioManager.death);
+        //audioManager.PlayMusic(audioManager.battle);
+        //audioManager.StopMusic(audioManager.battle, 0.5f);
         gameOverUI.SetActive(true);
         Time.timeScale = 0;
         FindAnyObjectByType<GameManager>().isGameActive = false;

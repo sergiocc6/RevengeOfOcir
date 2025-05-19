@@ -9,6 +9,7 @@ TagManager:
   - RightWall
   - Next Level
   - Coin
+  - Audio
   layers:
   - Default
   - TransparentFX

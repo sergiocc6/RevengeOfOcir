@@ -2,8 +2,10 @@ using UnityEngine;
 
 public class SkeletonPatrol : MonoBehaviour
 {
+    [Header("Health")]
     public int maxHealth = 5;
 
+    [Header("Movement and distances")]
     public bool facingLeft = true;
     public float moveSpeed = 2f;
     public Transform checkPoint;
@@ -11,18 +13,28 @@ public class SkeletonPatrol : MonoBehaviour
     public LayerMask layerMask;
 
     //Detect main character
+    [Header("Detect Player")]
     public bool inDetectRange = false;
     public Transform playerPosition;
     public float detectRange = 10f;
     public float attackRange = 2.5f;
     public float chaseSpeed = 4f;
     public Animator animator;
+    bool previousPlayerState = false;
 
-    //Attack variables
+    [Header("Attack")]
     public Transform attackPoint;
     public float attackRadious = 1.5f;
     public LayerMask attackLayerMask;
     public int damage = 1;
+
+    [Header("Audio")]
+    public AudioManager audioManager;
+
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -38,9 +50,9 @@ public class SkeletonPatrol : MonoBehaviour
             return;
         }
 
-        if(maxHealth <= 0)
+        if (maxHealth <= 0)
         {
-            Die();            
+            Die();
         }
 
         if (Vector2.Distance(transform.position, playerPosition.position) <= detectRange)
@@ -54,12 +66,19 @@ public class SkeletonPatrol : MonoBehaviour
 
         if (inDetectRange)
         {
-            if(playerPosition.position.x > transform.position.x && facingLeft)
+            if (inDetectRange != previousPlayerState)
+            {
+                audioManager.PlayMusic(audioManager.battle);
+                //audioManager.PlaySFX(audioManager.skeletonSnarl);
+                audioManager.PlaySFX(audioManager.skeletonSnarl, 1f);
+            }
+
+            if (playerPosition.position.x > transform.position.x && facingLeft)
             {
                 transform.eulerAngles = new Vector3(0f, -180f, 0f);
                 facingLeft = false;
             }
-            else if(playerPosition.position.x < transform.position.x && !facingLeft)
+            else if (playerPosition.position.x < transform.position.x && !facingLeft)
             {
                 transform.eulerAngles = new Vector3(0f, 0f, 0f);
                 facingLeft = true;
@@ -79,6 +98,11 @@ public class SkeletonPatrol : MonoBehaviour
         {
             //Patroling
 
+            if (inDetectRange != previousPlayerState)
+            {
+                audioManager.PlayMusic(audioManager.background);
+            }
+
             //Rotates Enemy if it is going to fall
             transform.Translate(Vector2.left * Time.deltaTime * moveSpeed);
 
@@ -95,15 +119,18 @@ public class SkeletonPatrol : MonoBehaviour
                 facingLeft = true;
             }
         }
+
+        previousPlayerState = inDetectRange;
     }
 
     public void Attack()
     {
+        audioManager.PlaySFX(audioManager.skeletonAttack, 1f);
         Collider2D colliderInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadious, attackLayerMask);
 
         if (colliderInfo)
         {
-            if(colliderInfo.gameObject.GetComponent<Player>() != null)
+            if (colliderInfo.gameObject.GetComponent<Player>() != null)
             {
                 colliderInfo.gameObject.GetComponent<Player>().TakeDamage(damage);
             }
@@ -112,7 +139,7 @@ public class SkeletonPatrol : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if(maxHealth <= 0)
+        if (maxHealth <= 0)
         {
             return;
         }
@@ -145,8 +172,12 @@ public class SkeletonPatrol : MonoBehaviour
     void Die()
     {
         Debug.Log(this.transform.name + " died");
+        audioManager.PlayMusic(audioManager.background);
+        //audioManager.PlaySFX(audioManager.skeletonSnarl);
+        audioManager.PlaySFX(audioManager.skeletonSnarl, 1f);
         //se puede poner un segundo parámetro se establece el tiempo que tarda en eliminar el objeto
         //sino se destruye instantaneamente
-        Destroy(this.gameObject); ;
+        animator.SetTrigger("Die");
+        Destroy(this.gameObject, 5f);
     }
 }
