@@ -6,24 +6,33 @@ public class Player : MonoBehaviour
 {
     public Rigidbody2D rb;
 
+    [Header("Coins")]
+    public Text coinText;
+    public int currentCoin = 0;
+
+    [Header("Health")]
     public int maxHealth = 3;
     public Text health;
 
+    [Header("Movement")]
     private float movement = 0f;
     public float moveSpeed = 7f;
     private bool facingRight = true;
 
+    [Header("Jump")]
     public float jumpSpeed = 15f;
     public float doubleJumpSpeed = 10f;
     public bool isGround = true;
     bool canDoubleJump;
 
+    [Header("Wall Jump & Sliding")]
     bool isTouchingFront = false;
     bool wallSliding;
     public float wallSlidingSpeed = 0.75f;
     bool isTouchingWallRight;
     bool isTouchingWallLeft;
 
+    [Header("Attack")]
     public Transform attackPoint;
     public float attackRadious = 1.7f;
     public LayerMask attackLayer;
@@ -31,6 +40,8 @@ public class Player : MonoBehaviour
     public bool touchNextLevel = false;
 
     public Animator animator;
+
+    public GameObject gameOverUI;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -42,10 +53,10 @@ public class Player : MonoBehaviour
     void Update()
     {
         if(maxHealth <= 0)
-        {
+        {            
             Die();
         }
-
+        coinText.text = currentCoin.ToString();
         health.text = maxHealth.ToString();
 
         movement = Input.GetAxis("Horizontal");
@@ -208,7 +219,11 @@ public class Player : MonoBehaviour
         Collider2D collInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadious, attackLayer);
         if (collInfo)
         {
-            Debug.Log(collInfo.gameObject.name + " takes damage");
+            if(collInfo.gameObject.GetComponent<SkeletonPatrol>() != null)
+            {
+                //The patrol enemy get 1 point of damage
+                collInfo.gameObject.GetComponent<SkeletonPatrol>().TakeDamage(1);
+            }
         }
     }
 
@@ -232,8 +247,30 @@ public class Player : MonoBehaviour
         maxHealth -= damage;
     }
 
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        //TODO: cambiar para el resto de monedas que den habilidades. Por ahora sólo está para una y no hace nada
+        if(other.gameObject.tag == "Coin")
+        {
+            currentCoin += 1;
+            other.gameObject.transform.GetChild(0).GetComponent<Animator>().SetTrigger("Collected");            
+            Destroy(other.gameObject, 1f);
+        }
+
+        if(other.gameObject.tag == "Next Level")
+        {
+            Debug.Log("Victory!");
+            FindAnyObjectByType<SceneManagement>().LoadSecondLevel();
+        }
+    }
+
     void Die()
     {
         Debug.Log("Player died");
+        gameOverUI.SetActive(true);
+        Time.timeScale = 0;
+        FindAnyObjectByType<GameManager>().isGameActive = false;
+        Destroy(this.gameObject);
+
     }
 }

@@ -33,6 +33,16 @@ public class SkeletonPatrol : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (FindAnyObjectByType<GameManager>().isGameActive == false)
+        {
+            return;
+        }
+
+        if(maxHealth <= 0)
+        {
+            Die();            
+        }
+
         if (Vector2.Distance(transform.position, playerPosition.position) <= detectRange)
         {
             inDetectRange = true;
@@ -130,5 +140,13 @@ public class SkeletonPatrol : MonoBehaviour
 
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(attackPoint.position, attackRadious);
+    }
+
+    void Die()
+    {
+        Debug.Log(this.transform.name + " died");
+        //se puede poner un segundo parámetro se establece el tiempo que tarda en eliminar el objeto
+        //sino se destruye instantaneamente
+        Destroy(this.gameObject); ;
     }
 }
