@@ -36,6 +36,7 @@ public class Player : MonoBehaviour
     public Transform attackPoint;
     public float attackRadious = 1.7f;
     public LayerMask attackLayer;
+    public int attackDamage = 1;
 
     public bool touchNextLevel = false;
 
@@ -47,6 +48,9 @@ public class Player : MonoBehaviour
 
     [Header("Audio")]
     public AudioManager audioManager;
+
+    [Header("Game Management")]
+    public GameManager gameManager;
 
     private void Awake()
     {
@@ -62,8 +66,36 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(maxHealth <= 0)
-        {            
+        //Menu Pausa y Settings
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Joystick1Button7))
+        {
+            if (gameOverUI.activeSelf)
+            {
+                gameOverUI.SetActive(false);
+                gameManager.isGameActive = true;
+                Time.timeScale = 1;
+            }
+            else if (pauseMenuUI.activeSelf)
+            {
+                pauseMenuUI.SetActive(false);
+                gameManager.isGameActive = true;
+                Time.timeScale = 1;
+            }
+            else
+            {
+                pauseMenuUI.SetActive(true);
+                gameManager.isGameActive = false;
+                Time.timeScale = 0;
+            }
+        }
+
+        if (gameManager.isGameActive == false)
+        {
+            return;
+        }
+
+        if (maxHealth <= 0)
+        {
             Die();
         }
         coinText.text = currentCoin.ToString();
@@ -82,7 +114,7 @@ public class Player : MonoBehaviour
             facingRight = true;
         }
 
-        // --- PASOS EN BUCLE ---
+        // bucle para el sonido de los pasos
         if (Math.Abs(movement) > 0.1f && isGround)
         {
             audioManager.PlayStepsLoop();
@@ -95,7 +127,7 @@ public class Player : MonoBehaviour
         }
 
         //Salto
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Joystick1Button0))
         {
             if (isGround)
             {
@@ -141,29 +173,23 @@ public class Player : MonoBehaviour
         //Correr
         if (Math.Abs(movement) > .1f)
         {
-            //audioManager.PlaySFX(audioManager.steps);
             animator.SetFloat("Run", 1f);
         }
         else if (movement < .1f)
         {
-            //audioManager.PlaySFX(audioManager.steps);
             animator.SetFloat("Run", 0f);
         }
 
         //Ataque (click izquierdo)
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Joystick1Button2))
         {
             animator.SetTrigger("Attack");
-            //audioManager.PlaySFX(audioManager.sword);
-            //audioManager.PlaySFX(audioManager.sword, 1f);
         }
 
         //Deslizarse pared
         if (isTouchingFront && !isGround)
         {
             wallSliding = true;
-            //audioManager.PlaySFX(audioManager.wallSlide);
-            //audioManager.PlaySFX(audioManager.wallSlide, 1f);
         }
         else
         {
@@ -179,26 +205,6 @@ public class Player : MonoBehaviour
         {
             animator.SetBool("Wall", false);
         }
-
-        //Menu Pausa
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (gameOverUI.activeSelf)
-            {
-                gameOverUI.SetActive(false);
-                Time.timeScale = 1;
-            }
-            else if (pauseMenuUI.activeSelf)
-            {
-                pauseMenuUI.SetActive(false);
-                Time.timeScale = 1;
-            }
-            else
-            {
-                pauseMenuUI.SetActive(true);
-                Time.timeScale = 0;
-            }
-        }
     }
 
     private void FixedUpdate()
@@ -208,8 +214,6 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log(collision.gameObject.tag);
-
         if (collision.gameObject.tag == "Ground")
         {
             isGround = true;
@@ -220,10 +224,10 @@ public class Player : MonoBehaviour
             animator.SetBool("Wall", false);
         }
 
-        if(collision.gameObject.tag == "Next Level")
+        if (collision.gameObject.tag == "Next Level")
         {
-            MainMenu menu = gameObject.AddComponent<MainMenu>();
-            menu.ChangeScene("Demo");
+            SceneManagement sceneManager = FindAnyObjectByType<SceneManagement>();
+            sceneManager.LoadSecondLevel();
         }
     }
 
@@ -243,7 +247,13 @@ public class Player : MonoBehaviour
             animator.SetBool("Fall", false);
         }
 
-        if(collision.gameObject.tag == "")
+        if(collision.gameObject.tag == "Water")
+        {
+            audioManager.PlaySFX(audioManager.waterDrops, 1f);
+            Die();
+        }
+
+        if (collision.gameObject.tag == "")
         {
             touchNextLevel = true;
         }
@@ -261,10 +271,10 @@ public class Player : MonoBehaviour
         Collider2D collInfo = Physics2D.OverlapCircle(attackPoint.position, attackRadious, attackLayer);
         if (collInfo)
         {
-            if(collInfo.gameObject.GetComponent<SkeletonPatrol>() != null)
+            if (collInfo.gameObject.GetComponent<SkeletonPatrol>() != null)
             {
                 //The patrol enemy get 1 point of damage
-                collInfo.gameObject.GetComponent<SkeletonPatrol>().TakeDamage(1);
+                collInfo.gameObject.GetComponent<SkeletonPatrol>().TakeDamage(attackDamage);
             }
         }
     }
@@ -276,12 +286,12 @@ public class Player : MonoBehaviour
 
     public void PlayWallSlideSound()
     {
-        audioManager.PlaySFX(audioManager.wallSlide, 1f);
+        //audioManager.PlaySFX(audioManager.wallSlide, 1f);
     }
 
     void OnDrawGizmosSelected()
     {
-        if(attackPoint == null)
+        if (attackPoint == null)
         {
             return;
         }
@@ -302,16 +312,16 @@ public class Player : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         //TODO: cambiar para el resto de monedas que den habilidades. Por ahora sólo está para una y no hace nada
-        if(other.gameObject.tag == "Coin")
+        if (other.gameObject.tag == "Coin")
         {
             //audioManager.PlaySFX(audioManager.coin);
             audioManager.PlaySFX(audioManager.coin, 1f);
             currentCoin += 1;
-            other.gameObject.transform.GetChild(0).GetComponent<Animator>().SetTrigger("Collected");            
+            other.gameObject.transform.GetChild(0).GetComponent<Animator>().SetTrigger("Collected");
             Destroy(other.gameObject, 1f);
         }
 
-        if(other.gameObject.tag == "Next Level")
+        if (other.gameObject.tag == "Next Level")
         {
             Debug.Log("Victory!");
             FindAnyObjectByType<SceneManagement>().LoadSecondLevel();
@@ -321,11 +331,8 @@ public class Player : MonoBehaviour
     void Die()
     {
         Debug.Log("Player died");
-        audioManager.PlaySFX(audioManager.death, 1f);
+        audioManager.PlayMusic(audioManager.death);
         audioManager.StopMusic();
-        //audioManager.PlaySFX(audioManager.death);
-        //audioManager.PlayMusic(audioManager.battle);
-        //audioManager.StopMusic(audioManager.battle, 0.5f);
         gameOverUI.SetActive(true);
         Time.timeScale = 0;
         FindAnyObjectByType<GameManager>().isGameActive = false;

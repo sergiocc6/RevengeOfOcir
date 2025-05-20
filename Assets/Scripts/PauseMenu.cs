@@ -4,24 +4,28 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {    
     public GameObject pauseMenu;
-    bool gamePaused = false;
 
+    
     public void Pause()
     {
         pauseMenu.SetActive(true);
+        FindAnyObjectByType<GameManager>().isGameActive = false;
     }
 
     public void Home()
     {
         SceneManager.LoadScene("MainMenu");
+        FindAnyObjectByType<GameManager>().isGameActive = true;
     }
 
     public void Resume()
     {
         pauseMenu.SetActive(false);
+        FindAnyObjectByType<GameManager>().isGameActive = true;
     }
-    public void Restar()
+    public void Restart()
     {
+        FindAnyObjectByType<GameManager>().isGameActive = true;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

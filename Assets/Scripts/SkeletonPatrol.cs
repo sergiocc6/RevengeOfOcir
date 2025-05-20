@@ -3,7 +3,7 @@ using UnityEngine;
 public class SkeletonPatrol : MonoBehaviour
 {
     [Header("Health")]
-    public int maxHealth = 5;
+    public int maxHealth = 2;
 
     [Header("Movement and distances")]
     public bool facingLeft = true;
@@ -31,6 +31,8 @@ public class SkeletonPatrol : MonoBehaviour
     [Header("Audio")]
     public AudioManager audioManager;
 
+    public GameManager gameManager;
+
     private void Awake()
     {
         audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
@@ -45,7 +47,7 @@ public class SkeletonPatrol : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (FindAnyObjectByType<GameManager>().isGameActive == false)
+        if (gameManager.isGameActive == false)
         {
             return;
         }
@@ -100,7 +102,7 @@ public class SkeletonPatrol : MonoBehaviour
 
             if (inDetectRange != previousPlayerState)
             {
-                audioManager.PlayMusic(audioManager.background);
+                audioManager.PlayMusic(audioManager.backgroundLevel1);
             }
 
             //Rotates Enemy if it is going to fall
@@ -139,6 +141,7 @@ public class SkeletonPatrol : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        Debug.Log("Skeleton took damage: " + damage);
         if (maxHealth <= 0)
         {
             return;
@@ -172,12 +175,9 @@ public class SkeletonPatrol : MonoBehaviour
     void Die()
     {
         Debug.Log(this.transform.name + " died");
-        audioManager.PlayMusic(audioManager.background);
-        //audioManager.PlaySFX(audioManager.skeletonSnarl);
+        audioManager.PlayMusic(audioManager.backgroundLevel1);
         audioManager.PlaySFX(audioManager.skeletonSnarl, 1f);
-        //se puede poner un segundo parámetro se establece el tiempo que tarda en eliminar el objeto
-        //sino se destruye instantaneamente
-        animator.SetTrigger("Die");
-        Destroy(this.gameObject, 5f);
+        //animator.SetBool("Died", true);
+        Destroy(this.gameObject);
     }
 }

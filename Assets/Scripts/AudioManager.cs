@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
@@ -8,7 +9,9 @@ public class AudioManager : MonoBehaviour
     private AudioSource stepsSource;
 
     [Header("Music Clips")]
-    public AudioClip background;
+    public AudioClip backgroundLevel1;
+    public AudioClip backgroundLevel2;
+    public AudioClip backgroundMenu;
     public AudioClip battle;
     public AudioClip epicBattle;
 
@@ -21,27 +24,51 @@ public class AudioManager : MonoBehaviour
     public AudioClip skeletonSnarl;
     public AudioClip skeletonAttack;
     public AudioClip coin;
+    public AudioClip waterDrops;
 
     private void Start()
     {
-        musicSource.clip = background;
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        switch (currentSceneName)
+        {
+            case "FirstScene":
+                musicSource.clip = backgroundLevel1;
+                break;
+            case "Level2":
+                musicSource.clip = backgroundLevel1;
+                break;
+            default:
+                musicSource.clip = backgroundLevel1;
+                break;
+        }
+        
         musicSource.Play();
     }
 
     public void PlaySFX(AudioClip clip)
     {
-        Debug.Log("Playing SFX: " + clip.name);
+        //Debug.Log("Playing SFX: " + clip.name);
         SFXSource.Stop();
         SFXSource.PlayOneShot(clip);
     }
 
     public void PlaySFX(AudioClip clip, float volume = 1f)
     {
-        Debug.Log("Playing SFX: " + clip.name);
+        //AudioSource tempSource = gameObject.AddComponent<AudioSource>();
+        //AudioSource tempSource = SFXSource;
+        //tempSource.clip = clip;
+        //tempSource.volume = volume;
+        //tempSource.Play();
+        //Destroy(tempSource, clip.length);
+
+        // Crear un nuevo AudioSource temporal
         AudioSource tempSource = gameObject.AddComponent<AudioSource>();
+        tempSource.outputAudioMixerGroup = SFXSource.outputAudioMixerGroup; // Asignar el mismo AudioMixerGroup
         tempSource.clip = clip;
         tempSource.volume = volume;
         tempSource.Play();
+
+        // Destruir el AudioSource después de que termine el clip
         Destroy(tempSource, clip.length);
     }
 
@@ -50,6 +77,7 @@ public class AudioManager : MonoBehaviour
         if (stepsSource == null)
         {
             stepsSource = gameObject.AddComponent<AudioSource>();
+            stepsSource.outputAudioMixerGroup = SFXSource.outputAudioMixerGroup;
             stepsSource.clip = steps;
             stepsSource.loop = true;
             stepsSource.volume = 1f;
@@ -71,6 +99,21 @@ public class AudioManager : MonoBehaviour
         musicSource.Play();
     }
 
+    public void OnApplicationPause(bool pause)
+    {
+        if (pause)
+        {
+            musicSource.Pause();
+            if (stepsSource != null && stepsSource.isPlaying)
+                stepsSource.Pause();
+        }
+        else
+        {
+            musicSource.UnPause();
+            if (stepsSource != null && !stepsSource.isPlaying)
+                stepsSource.UnPause();
+        }
+    }
 
     public void StopMusic()
     {

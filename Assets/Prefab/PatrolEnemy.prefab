@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2568265622743744562}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: CheckPoint
   m_TagString: Untagged
   m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 7519472082899215739}
   - component: {fileID: 308003783618784665}
   - component: {fileID: 4279990315715717500}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: PatrolEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -66,6 +66,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2568265622743744562}
+  - {fileID: 8956834376484762034}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1616392193514727733
@@ -208,6 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4afbc2c95d88244783e60073bb66e3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 2
   facingLeft: 1
   moveSpeed: 2
   checkPoint: {fileID: 2568265622743744562}
@@ -220,12 +222,15 @@ MonoBehaviour:
   detectRange: 10
   attackRange: 2.5
   chaseSpeed: 4
-  animator: {fileID: 0}
-  attackPoint: {fileID: 0}
-  attackRadious: 1
+  animator: {fileID: 4279990315715717500}
+  attackPoint: {fileID: 8956834376484762034}
+  attackRadious: 1.5
   attackLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
+  damage: 1
+  audioManager: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!95 &4279990315715717500
 Animator:
   serializedVersion: 7
@@ -248,3 +253,34 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &5258339604730955934
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8956834376484762034}
+  m_Layer: 9
+  m_Name: AttackPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8956834376484762034
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5258339604730955934}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.55, y: 0.34, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5674282948685947501}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
