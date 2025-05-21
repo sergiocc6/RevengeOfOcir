@@ -43,6 +43,7 @@ public class HelpMessages : MonoBehaviour
 
     IEnumerator MostrarMensajeLetraPorLetra(string texto)
     {
+        velocidadEscritura = 0;
         mensajeUI.text = "";
         foreach (char letra in texto)
         {

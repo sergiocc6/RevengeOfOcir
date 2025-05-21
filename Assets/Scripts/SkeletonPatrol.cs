@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class SkeletonPatrol : MonoBehaviour
 {
+    [Header("Coin")]
+    public GameObject coinPrefab;
+
     [Header("Health")]
     public int maxHealth = 2;
 
@@ -178,6 +181,13 @@ public class SkeletonPatrol : MonoBehaviour
         audioManager.PlayMusic(audioManager.backgroundLevel1);
         audioManager.PlaySFX(audioManager.skeletonSnarl, 1f);
         //animator.SetBool("Died", true);
+
+        if (coinPrefab != null)
+        {
+            Instantiate(coinPrefab, transform.position, Quaternion.identity);
+        }
+
+
         Destroy(this.gameObject);
     }
 }
