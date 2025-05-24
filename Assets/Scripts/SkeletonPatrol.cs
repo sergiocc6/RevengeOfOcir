@@ -78,23 +78,55 @@ public class SkeletonPatrol : MonoBehaviour
                 audioManager.PlaySFX(audioManager.skeletonSnarl, 1f);
             }
 
-            if (playerPosition.position.x > transform.position.x && facingLeft)
+            //if (playerPosition.position.x > transform.position.x && facingLeft)
+            //{
+            //    transform.eulerAngles = new Vector3(0f, -180f, 0f);
+            //    facingLeft = false;
+            //}
+            //else if (playerPosition.position.x < transform.position.x && !facingLeft)
+            //{
+            //    transform.eulerAngles = new Vector3(0f, 0f, 0f);
+            //    facingLeft = true;
+            //}
+
+            //if (Vector2.Distance(transform.position, playerPosition.position) > attackRange)
+            //{
+            //    animator.SetBool("Attack1", false);
+            //    transform.position = Vector2.MoveTowards(transform.position, playerPosition.position, chaseSpeed * Time.deltaTime);
+            //}
+            //else
+            //{
+            //    animator.SetBool("Attack1", true);
+            //}
+
+            // Determina dirección hacia el jugador
+            float direction = playerPosition.position.x - transform.position.x;
+
+            // Gira el sprite según la dirección
+            if (direction > 0 && facingLeft)
             {
                 transform.eulerAngles = new Vector3(0f, -180f, 0f);
                 facingLeft = false;
             }
-            else if (playerPosition.position.x < transform.position.x && !facingLeft)
+            else if (direction < 0 && !facingLeft)
             {
                 transform.eulerAngles = new Vector3(0f, 0f, 0f);
                 facingLeft = true;
             }
 
-            if (Vector2.Distance(transform.position, playerPosition.position) > attackRange)
+            // Solo persigue si hay suelo delante (igual que en patrulla)
+            Vector2 rayOrigin = checkPoint.position;
+            RaycastHit2D hitGround = Physics2D.Raycast(rayOrigin, Vector2.down, groundDistante, layerMask);
+
+            bool canMove = hitGround;
+
+            if (Mathf.Abs(direction) > attackRange && canMove)
             {
                 animator.SetBool("Attack1", false);
-                transform.position = Vector2.MoveTowards(transform.position, playerPosition.position, chaseSpeed * Time.deltaTime);
+                Vector2 target = new Vector2(playerPosition.position.x, transform.position.y);
+                transform.position = Vector2.MoveTowards(transform.position, target, chaseSpeed * Time.deltaTime);
             }
-            else
+            else if (Mathf.Abs(direction) <= attackRange)
             {
                 animator.SetBool("Attack1", true);
             }

@@ -11,6 +11,11 @@ TagManager:
   - Coin
   - Audio
   - Water
+  - Trap
+  - CheckPoint
+  - Game Over UI
+  - Pause UI
+  - Settings UI
   layers:
   - Default
   - TransparentFX

@@ -35,7 +35,7 @@ public class AudioManager : MonoBehaviour
                 musicSource.clip = backgroundLevel1;
                 break;
             case "Level2":
-                musicSource.clip = backgroundLevel1;
+                musicSource.clip = backgroundLevel2;
                 break;
             default:
                 musicSource.clip = backgroundLevel1;
@@ -54,13 +54,6 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySFX(AudioClip clip, float volume = 1f)
     {
-        //AudioSource tempSource = gameObject.AddComponent<AudioSource>();
-        //AudioSource tempSource = SFXSource;
-        //tempSource.clip = clip;
-        //tempSource.volume = volume;
-        //tempSource.Play();
-        //Destroy(tempSource, clip.length);
-
         // Crear un nuevo AudioSource temporal
         AudioSource tempSource = gameObject.AddComponent<AudioSource>();
         tempSource.outputAudioMixerGroup = SFXSource.outputAudioMixerGroup; // Asignar el mismo AudioMixerGroup

@@ -6,51 +6,65 @@ public class Player : MonoBehaviour
 {
     public Rigidbody2D rb;
 
-    [Header("Coins")]
+    [Header("--- Coins ---")]
     public Text coinText;
     public int currentCoin = 0;
 
-    [Header("Health")]
+    [Header("--- Health ---")]
     public int maxHealth = 3;
     public Text health;
+    public GameObject heartPrefab;
+    public Transform heartsContainer;
 
-    [Header("Movement")]
+    [Header("--- Movement ---")]
     private float movement = 0f;
     public float moveSpeed = 7f;
     private bool facingRight = true;
 
-    [Header("Jump")]
+    [Header("--- Jump  ---")]
     public float jumpSpeed = 15f;
     public float doubleJumpSpeed = 10f;
     public bool isGround = true;
     bool canDoubleJump;
 
-    [Header("Wall Jump & Sliding")]
+    [Header("--- Wall Jump & Sliding ---")]
     bool isTouchingFront = false;
     bool wallSliding;
     public float wallSlidingSpeed = 0.75f;
     bool isTouchingWallRight;
     bool isTouchingWallLeft;
+    bool isWallJumping = false;
 
-    [Header("Attack")]
+    [Header("--- Attack ---")]
     public Transform attackPoint;
     public float attackRadious = 1.7f;
     public LayerMask attackLayer;
     public int attackDamage = 1;
 
-    public bool touchNextLevel = false;
+    [Header("--- Shield ---")]
+    public bool hasShield = false;
+    public bool isShieldActive = false;
+    public float shieldDuration = 5f;
 
+
+    bool touchNextLevel = false;
+
+    [Header("--- Animator ---")]
     public Animator animator;
 
-    [Header("UI")]
+    [Header("--- UI ---")]
     public GameObject gameOverUI;
     public GameObject pauseMenuUI;
 
-    [Header("Audio")]
+    [Header("--- Audio ---")]
     public AudioManager audioManager;
 
-    [Header("Game Management")]
+    [Header("--- Game Management ---")]
     public GameManager gameManager;
+
+    [Header("--- Chekpoint ---")]
+    Vector2 startPosition;
+    Vector2 checkpointPosition;
 
     private void Awake()
     {
@@ -60,7 +74,11 @@ public class Player : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        checkpointPosition = transform.position;
+        startPosition = transform.position;
+        gameManager.isGameActive = true;
+        currentCoin = gameManager.coinCount;
+        UpdateHearts();
     }
 
     // Update is called once per frame
@@ -96,12 +114,14 @@ public class Player : MonoBehaviour
 
         if (maxHealth <= 0)
         {
+            UpdateHearts();
             Die();
         }
         coinText.text = currentCoin.ToString();
         health.text = maxHealth.ToString();
 
-        movement = Input.GetAxis("Horizontal");
+        //movement = Input.GetAxis("Horizontal");
+        movement = isShieldActive ? 0f : Input.GetAxis("Horizontal");
 
         if (movement < 0f && facingRight)
         {
@@ -137,16 +157,10 @@ public class Player : MonoBehaviour
                 animator.SetBool("Jump", true);
                 audioManager.PlaySFX(audioManager.jump, 1f); // Usa la versión que permite superposición
             }
-            else if (canDoubleJump && !wallSliding)
-            {
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpSpeed);
-                canDoubleJump = false;
-                animator.SetBool("DoubleJump", true);
-                audioManager.PlaySFX(audioManager.jump, 1f);
-            }
             else if (wallSliding)
             {
                 float direction = isTouchingWallRight ? -1 : 1;
+                isWallJumping = true;
                 isTouchingWallLeft = !isTouchingWallRight;
                 rb.linearVelocity = new Vector2(direction * 10f, jumpSpeed * 0.8f);
                 facingRight = direction > 0;
@@ -156,10 +170,29 @@ public class Player : MonoBehaviour
                 animator.SetBool("Jump", true);
                 audioManager.PlaySFX(audioManager.jump, 1f);
             }
+            else if (canDoubleJump)
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpSpeed);
+                canDoubleJump = false;
+                animator.SetBool("DoubleJump", true);
+                audioManager.PlaySFX(audioManager.jump, 1f);
+            }
+        }
+
+        //Escudo (Click derecho)
+        if ((Input.GetMouseButton(1) || Input.GetKey(KeyCode.Joystick1Button3)) && hasShield)
+        {
+            isShieldActive = true;
+            animator.SetBool("Shield", true);
+        }
+        else
+        {
+            isShieldActive = false;
+            animator.SetBool("Shield", false);
         }
 
         //Caer
-        if (rb.linearVelocity.y < 0f)
+        if (rb.linearVelocity.y < 0f && !isGround)
         {
             animator.SetBool("Jump", false);
             if (!wallSliding)
@@ -171,7 +204,7 @@ public class Player : MonoBehaviour
         }
 
         //Correr
-        if (Math.Abs(movement) > .1f)
+        if (Math.Abs(movement) > .1f && !wallSliding)
         {
             animator.SetFloat("Run", 1f);
         }
@@ -209,25 +242,78 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        transform.position += new Vector3(movement, 0f, 0f) * Time.fixedDeltaTime * moveSpeed;
+        if (isWallJumping)
+        {
+            transform.position += new Vector3(movement, 0f, 0f) * Time.fixedDeltaTime * moveSpeed;
+        }
+        //transform.position += new Vector3(movement, 0f, 0f) * Time.fixedDeltaTime * moveSpeed;
+        else
+        {
+            if (wallSliding)
+            {
+                bool pressingTowardsWall = (isTouchingWallRight && movement > 0) || (isTouchingWallLeft && movement < 0);
+
+                if (pressingTowardsWall)
+                {
+                    rb.linearVelocity = new Vector2(0f, -wallSlidingSpeed);
+                }
+                else
+                {
+                    rb.linearVelocity = new Vector2(movement * moveSpeed, -wallSlidingSpeed);
+                }
+            }
+            else
+                rb.linearVelocity = new Vector2(movement * moveSpeed, rb.linearVelocity.y);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        isWallJumping = false;
+        Debug.Log("Collision with: " + collision.gameObject.tag);
         if (collision.gameObject.tag == "Ground")
         {
             isGround = true;
             canDoubleJump = true;
             animator.SetBool("Jump", false);
             animator.SetBool("DoubleJump", false);
-            animator.SetBool("Fall", false);
             animator.SetBool("Wall", false);
+            animator.SetBool("Fall", false);
         }
 
         if (collision.gameObject.tag == "Next Level")
         {
             SceneManagement sceneManager = FindAnyObjectByType<SceneManagement>();
             sceneManager.LoadSecondLevel();
+        }
+
+        if (collision.gameObject.tag == "RightWall")
+        {
+            isTouchingFront = true;
+            isTouchingWallRight = true;
+            animator.SetBool("Fall", false);
+        }
+
+        if (collision.gameObject.tag == "LeftWall")
+        {
+            isTouchingFront = true;
+            isTouchingWallLeft = true;
+            animator.SetBool("Fall", false);
+        }
+
+        if(collision.gameObject.tag == "Trap")
+        {
+            TouchTrap();
+        }
+
+        if(collision.gameObject.tag == "Water")
+        {
+            Die();
+        }
+
+        if (collision.gameObject.tag == "CheckPoint")
+        {
+            UpdateCheckpointPosition(collision.transform.position);
         }
     }
 
@@ -247,12 +333,6 @@ public class Player : MonoBehaviour
             animator.SetBool("Fall", false);
         }
 
-        if(collision.gameObject.tag == "Water")
-        {
-            audioManager.PlaySFX(audioManager.waterDrops, 1f);
-            Die();
-        }
-
         if (collision.gameObject.tag == "")
         {
             touchNextLevel = true;
@@ -264,6 +344,11 @@ public class Player : MonoBehaviour
         isTouchingFront = false;
         isTouchingWallRight = false;
         isTouchingWallLeft = false;
+
+        if(collision.gameObject.tag == "Ground")
+        {
+            isGround = false;
+        }
     }
 
     public void Attack()
@@ -299,14 +384,25 @@ public class Player : MonoBehaviour
         Gizmos.DrawWireSphere(attackPoint.position, attackRadious);
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, bool fromTrap = false)
     {
+        if(isShieldActive && !fromTrap)
+        {
+            isShieldActive = false;
+            animator.SetBool("Shield", false);
+            return;
+        }
+
         if (maxHealth <= 0)
         {
             return;
         }
 
         maxHealth -= damage;
+        UpdateHearts();
+
+        if (maxHealth > 0)
+            animator.SetTrigger("TakeDamage");
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -321,6 +417,13 @@ public class Player : MonoBehaviour
             Destroy(other.gameObject, 1f);
         }
 
+        if(other.gameObject.name == "Shield")
+        {
+            hasShield = true;
+            other.gameObject.GetComponentInChildren<Animator>().SetTrigger("Collected");
+            Destroy(other.gameObject, 0.5f);
+        }
+
         if (other.gameObject.tag == "Next Level")
         {
             Debug.Log("Victory!");
@@ -330,12 +433,55 @@ public class Player : MonoBehaviour
 
     void Die()
     {
+        animator.SetBool("Fall", false);
         Debug.Log("Player died");
         audioManager.PlayMusic(audioManager.death);
         audioManager.StopMusic();
-        gameOverUI.SetActive(true);
-        Time.timeScale = 0;
         FindAnyObjectByType<GameManager>().isGameActive = false;
-        Destroy(this.gameObject);
+        animator.SetTrigger("Die");
     }
+
+
+    public void OnDieAnimationEnd()
+    {
+        Time.timeScale = 0;
+        gameOverUI.SetActive(true);
+    }
+
+
+    public void UpdateCheckpointPosition(Vector2 position)
+    {
+        checkpointPosition = position;
+    }
+
+    public void TouchTrap()
+    {
+        TakeDamage(1, true);
+
+        if (maxHealth <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            transform.position = checkpointPosition;
+        }
+        //transform.position = checkpointPosition;
+    }
+
+    public void UpdateHearts()
+    {
+        // Limpia los corazones antiguos
+        foreach (Transform child in heartsContainer)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Instancia tantos corazones como maxHealth
+        for (int i = 0; i < maxHealth; i++)
+        {
+            Instantiate(heartPrefab, heartsContainer);
+        }
+    }
+
 }

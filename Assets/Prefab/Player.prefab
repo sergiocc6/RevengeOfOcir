@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 5505186291048199072}
   m_Layer: 8
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -213,6 +213,8 @@ MonoBehaviour:
   currentCoin: 0
   maxHealth: 3
   health: {fileID: 0}
+  heartPrefab: {fileID: 4668218654333718439, guid: 07eb62295ac842d46b121b20326a8abe, type: 3}
+  heartsContainer: {fileID: 0}
   moveSpeed: 7
   jumpSpeed: 13
   doubleJumpSpeed: 10
@@ -224,7 +226,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   attackDamage: 1
-  touchNextLevel: 0
+  hasShield: 0
+  isShieldActive: 0
+  shieldDuration: 5
   animator: {fileID: 5505186291048199072}
   gameOverUI: {fileID: 0}
   pauseMenuUI: {fileID: 0}

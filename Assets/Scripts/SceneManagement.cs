@@ -8,6 +8,19 @@ public class SceneManagement : MonoBehaviour
     public GameObject settingsMenuUI;
     public GameManager gameManager;
 
+    private void Start()
+    {
+        //if (gameManager == null)
+        //    gameManager = FindObjectOfType<GameManager>();
+        //// Lo mismo para pauseMenuUI y settingsMenuUI si es necesario
+
+        //if (pauseMenuUI == null || settingsMenuUI == null)
+        //{
+        //    settingsMenuUI = FindObjectsByType<>
+        //    return;
+        //}
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Joystick1Button1))
@@ -65,6 +78,21 @@ public class SceneManagement : MonoBehaviour
         settingsMenuUI.SetActive(true);
     }
 
+    public void LoadSettingsPause(GameObject settingMenu)
+    {
+        if (pauseMenuUI == null)
+        {
+            pauseMenuUI = GameObject.FindGameObjectWithTag("Pause UI");
+        }
+        if (gameManager == null)
+        {
+            gameManager = GameObject.FindObjectOfType<GameManager>();
+        }
+        gameManager.isGameActive = false;
+        pauseMenuUI.SetActive(false);
+        settingMenu.SetActive(true);
+    }
+
     public void PauseMenuBack(GameObject previousMenu = null)
     {
         if (previousMenu != null)
@@ -74,5 +102,14 @@ public class SceneManagement : MonoBehaviour
 
         gameManager.isGameActive = false;
         pauseMenuUI.SetActive(true);
+    }
+
+    public void CloseMessage(GameObject message)
+    {
+        if(Time.timeScale ==0)
+        {
+            Time.timeScale = 1;
+        }
+        message.SetActive(false);
     }
 }
