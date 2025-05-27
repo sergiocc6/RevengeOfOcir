@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 429726052974363054}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -33.574654, y: -36.829384, z: 0.20766154}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -181,7 +181,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 4
+  m_Constraints: 7
 --- !u!61 &7517546183159751154
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -212,11 +212,11 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.14921415, y: -0.021560669}
+  m_Offset: {x: -0.14163399, y: -0.07213879}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -226,7 +226,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.94271207, y: 2.7037354}
+  m_Size: {x: 0.9578743, y: 2.602579}
   m_EdgeRadius: 0
 --- !u!114 &6082220156406221129
 MonoBehaviour:
@@ -245,6 +245,7 @@ MonoBehaviour:
   fireballPrefab: {fileID: 7945386900498631627, guid: 0547b18f5aadbd342b836e9f50d7fff9, type: 3}
   startPoint: {fileID: 4884289709038546138}
   boxCollider2D: {fileID: 7517546183159751154}
+  detectionRange: 20
 --- !u!95 &3023413432562920834
 Animator:
   serializedVersion: 7

@@ -13,7 +13,8 @@ public class MovingPlatform : MonoBehaviour
 
     private void Update()
     {
-        if(Vector2.Distance(transform.position, posA.position) < 0.05f)
+        // Check if the platform is close to either position and switch target accordingly
+        if (Vector2.Distance(transform.position, posA.position) < 0.05f)
         {
             targetPos = posB.position;
         }
@@ -25,6 +26,7 @@ public class MovingPlatform : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
     }
 
+    // Set the player as a child of the platform when they enter the platform area
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
@@ -33,6 +35,7 @@ public class MovingPlatform : MonoBehaviour
         }
     }
 
+    // Set the player as a child of the platform when they stay the platform area
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
@@ -41,6 +44,7 @@ public class MovingPlatform : MonoBehaviour
         }
     }
 
+    // Remove the player from the platform when they exit the platform area
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))

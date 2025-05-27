@@ -29,11 +29,8 @@ public class AudioManager : MonoBehaviour
     public AudioClip monsterDeath;
     public AudioClip axe;
     public AudioClip thunder;
-
-    void Awake()
-    {
-        //DontDestroyOnLoad(gameObject);
-    }
+    public AudioClip magicDrop;
+    public AudioClip magicExplode;
 
     private void Start()
     {
@@ -59,26 +56,40 @@ public class AudioManager : MonoBehaviour
         musicSource.Play();
     }
 
+    /// <summary>
+    /// Plays a sound effect using the specified audio clip.
+    /// </summary>
+    /// <param name="clip">The audio clip to be played. Cannot be null.</param>
     public void PlaySFX(AudioClip clip)
     {
-        //Debug.Log("Playing SFX: " + clip.name);
         SFXSource.Stop();
         SFXSource.PlayOneShot(clip);
     }
 
+    /// <summary>
+    /// Plays a sound effect using a temporary audio source.
+    /// </summary>
+    /// <remarks>This method creates a temporary <see cref="AudioSource"/> to play the specified audio clip.
+    /// The temporary audio source is automatically destroyed after the clip finishes playing.</remarks>
+    /// <param name="clip">The audio clip to be played. Cannot be null.</param>
+    /// <param name="volume">The volume at which the audio clip will be played. Must be between 0.0 and 1.0. Defaults to 1.0.</param>
     public void PlaySFX(AudioClip clip, float volume = 1f)
     {
-        // Crear un nuevo AudioSource temporal
         AudioSource tempSource = gameObject.AddComponent<AudioSource>();
-        tempSource.outputAudioMixerGroup = SFXSource.outputAudioMixerGroup; // Asignar el mismo AudioMixerGroup
+        tempSource.outputAudioMixerGroup = SFXSource.outputAudioMixerGroup;
         tempSource.clip = clip;
         tempSource.volume = volume;
         tempSource.Play();
 
-        // Destruir el AudioSource después de que termine el clip
         Destroy(tempSource, clip.length);
     }
 
+    /// <summary>
+    /// Plays a looping audio clip of steps if it is not already playing.
+    /// </summary>
+    /// <remarks>This method ensures that an <see cref="AudioSource"/> is attached to the game object and
+    /// configured  to play the steps audio clip in a loop. If the audio source is already playing, the method does
+    /// nothing.</remarks>
     public void PlayStepsLoop()
     {
         if (stepsSource == null)
@@ -93,14 +104,26 @@ public class AudioManager : MonoBehaviour
             stepsSource.Play();
     }
 
+    /// <summary>
+    /// Stops the playback of the steps sound loop if it is currently playing.
+    /// </summary>
+    /// <remarks>This method checks if the steps sound source is not null and is currently playing before
+    /// stopping it.</remarks>
     public void StopStepsLoop()
     {
         if (stepsSource != null && stepsSource.isPlaying)
             stepsSource.Stop();
     }
 
+    /// <summary>
+    /// Plays the specified audio clip using the music source.
+    /// </summary>
+    /// <param name="clip">The audio clip to be played. Cannot be null.</param>
     public void PlayMusic(AudioClip clip)
     {
+        if(musicSource.clip == clip && musicSource.isPlaying)
+            return; // If the same clip is already playing, do nothing
+
         musicSource.Stop();
         musicSource.clip = clip;
         musicSource.Play();
@@ -122,6 +145,9 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Stops the currently playing music.
+    /// </summary>
     public void StopMusic()
     {
         if (musicSource.isPlaying)

@@ -1,7 +1,6 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
-//using UnityEngine.UI;
 
 public class HelpMessages : MonoBehaviour
 {
@@ -25,7 +24,7 @@ public class HelpMessages : MonoBehaviour
             cartelUI.SetActive(true);
             if (escrituraActual != null)
                 StopCoroutine(escrituraActual);
-            escrituraActual = StartCoroutine(MostrarMensajeLetraPorLetra(mensaje));
+            escrituraActual = StartCoroutine(WriteCharacterByCharacter(mensaje));
         }
     }
 
@@ -41,7 +40,7 @@ public class HelpMessages : MonoBehaviour
         }
     }
 
-    IEnumerator MostrarMensajeLetraPorLetra(string texto)
+    IEnumerator WriteCharacterByCharacter(string texto)
     {
         velocidadEscritura = 0;
         mensajeUI.text = "";

@@ -4,14 +4,10 @@ public class MagickAttackRay : MonoBehaviour
 {
     private bool checkHit = false;
     private bool playerHitted = false;
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // Check if the collider belongs to the player and Player takes damage
         if (checkHit && collision.gameObject.CompareTag("Player") && !playerHitted)
         {
             Player player = collision.gameObject.GetComponent<Player>();
@@ -26,6 +22,7 @@ public class MagickAttackRay : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
+        // Check if the collider belongs to the player and Player takes damage
         if (checkHit && collision.gameObject.CompareTag("Player") && !playerHitted)
         {
             Player player = collision.gameObject.GetComponent<Player>();
@@ -48,6 +45,9 @@ public class MagickAttackRay : MonoBehaviour
         checkHit = false;
     }
 
+    /// <summary>
+    /// Destroys the game object this script is attached to.
+    /// </summary>
     public void DestroyThis()
     {
         Destroy(gameObject);

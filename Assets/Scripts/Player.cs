@@ -84,7 +84,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Menu Pausa y Settings
+        //Pause and Settings Menus
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Joystick1Button7))
         {
             if (gameOverUI.activeSelf)
@@ -120,7 +120,6 @@ public class Player : MonoBehaviour
         coinText.text = currentCoin.ToString();
         health.text = maxHealth.ToString();
 
-        //movement = Input.GetAxis("Horizontal");
         movement = isShieldActive ? 0f : Input.GetAxis("Horizontal");
 
         if (movement < 0f && facingRight)
@@ -134,7 +133,7 @@ public class Player : MonoBehaviour
             facingRight = true;
         }
 
-        // bucle para el sonido de los pasos
+        // bucle for the steps sound
         if (Math.Abs(movement) > 0.1f && isGround)
         {
             audioManager.PlayStepsLoop();
@@ -146,7 +145,7 @@ public class Player : MonoBehaviour
             animator.SetFloat("Run", 0f);
         }
 
-        //Salto
+        //Jump
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Joystick1Button0))
         {
             if (isGround)
@@ -155,7 +154,7 @@ public class Player : MonoBehaviour
                 canDoubleJump = true;
                 isGround = false;
                 animator.SetBool("Jump", true);
-                audioManager.PlaySFX(audioManager.jump, 1f); // Usa la versión que permite superposición
+                audioManager.PlaySFX(audioManager.jump, 1f);
             }
             else if (wallSliding)
             {
@@ -179,7 +178,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        //Escudo (Click derecho)
+        //Shield (Right click or Joystick button 3)
         if ((Input.GetMouseButton(1) || Input.GetKey(KeyCode.Joystick1Button3)) && hasShield)
         {
             isShieldActive = true;
@@ -191,7 +190,7 @@ public class Player : MonoBehaviour
             animator.SetBool("Shield", false);
         }
 
-        //Caer
+        //Fall
         if (rb.linearVelocity.y < 0f && !isGround)
         {
             animator.SetBool("Jump", false);
@@ -203,7 +202,7 @@ public class Player : MonoBehaviour
             animator.SetBool("Fall", false);
         }
 
-        //Correr
+        //Run
         if (Math.Abs(movement) > .1f && !wallSliding)
         {
             animator.SetFloat("Run", 1f);
@@ -213,13 +212,13 @@ public class Player : MonoBehaviour
             animator.SetFloat("Run", 0f);
         }
 
-        //Ataque (click izquierdo)
+        //Attack (Left click or Joystick button 2)
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Joystick1Button2))
         {
             animator.SetTrigger("Attack");
         }
 
-        //Deslizarse pared
+        // Wall Sliding
         if (isTouchingFront && !isGround)
         {
             wallSliding = true;
@@ -246,7 +245,7 @@ public class Player : MonoBehaviour
         {
             transform.position += new Vector3(movement, 0f, 0f) * Time.fixedDeltaTime * moveSpeed;
         }
-        //transform.position += new Vector3(movement, 0f, 0f) * Time.fixedDeltaTime * moveSpeed;
+        
         else
         {
             if (wallSliding)
@@ -400,8 +399,6 @@ public class Player : MonoBehaviour
         if(isShieldActive && !fromTrap)
         {
             animator.SetTrigger("ShieldBlock");
-            //isShieldActive = false;
-            //animator.SetBool("Shield", false);
             return;
         }
 
@@ -419,10 +416,8 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        //TODO: cambiar para el resto de monedas que den habilidades. Por ahora sólo está para una y no hace nada
         if (other.gameObject.tag == "Coin")
         {
-            //audioManager.PlaySFX(audioManager.coin);
             audioManager.PlaySFX(audioManager.coin, 1f);
             currentCoin += 1;
             other.gameObject.transform.GetChild(0).GetComponent<Animator>().SetTrigger("Collected");
@@ -478,18 +473,17 @@ public class Player : MonoBehaviour
         {
             transform.position = checkpointPosition;
         }
-        //transform.position = checkpointPosition;
     }
 
     public void UpdateHearts()
     {
-        // Limpia los corazones antiguos
+        // Clean the hearts container
         foreach (Transform child in heartsContainer)
         {
             Destroy(child.gameObject);
         }
 
-        // Instancia tantos corazones como maxHealth
+        // Instantiate hearts based on maxHealth
         for (int i = 0; i < maxHealth; i++)
         {
             Instantiate(heartPrefab, heartsContainer);

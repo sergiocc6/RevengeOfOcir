@@ -76,14 +76,13 @@ public class SkeletonPatrol : MonoBehaviour
             if (inDetectRange != previousPlayerState)
             {
                 audioManager.PlayMusic(audioManager.battle);
-                //audioManager.PlaySFX(audioManager.skeletonSnarl);
                 audioManager.PlaySFX(audioManager.skeletonSnarl, 1f);
             }
 
-            // Determina dirección hacia el jugador
+            // Set direction based on player position
             float direction = playerPosition.position.x - transform.position.x;
 
-            // Gira el sprite según la dirección
+            // Change facing direction based on player position
             if (direction > 0 && facingLeft)
             {
                 transform.eulerAngles = new Vector3(0f, -180f, 0f);
@@ -95,7 +94,7 @@ public class SkeletonPatrol : MonoBehaviour
                 facingLeft = true;
             }
 
-            // Solo persigue si hay suelo delante (igual que en patrulla)
+            // Only chase if the player is within the attack range
             Vector2 rayOrigin = checkPoint.position;
             RaycastHit2D hitGround = Physics2D.Raycast(rayOrigin, Vector2.down, groundDistante, layerMask);
 
@@ -115,10 +114,16 @@ public class SkeletonPatrol : MonoBehaviour
         else
         {
             //Patroling
-
             if (inDetectRange != previousPlayerState)
             {
-                audioManager.PlayMusic(audioManager.backgroundLevel1);
+                if (SceneManager.GetActiveScene().name == "FirstScene")
+                {
+                    audioManager.PlayMusic(audioManager.backgroundLevel1);
+                }
+                else if (SceneManager.GetActiveScene().name == "Level2")
+                {
+                    audioManager.PlayMusic(audioManager.backgroundLevel2);
+                }
             }
 
             //Rotates Enemy if it is going to fall
@@ -203,7 +208,6 @@ public class SkeletonPatrol : MonoBehaviour
         }
 
         audioManager.PlaySFX(audioManager.skeletonSnarl, 1f);
-        //animator.SetBool("Died", true);
 
         if (coinPrefab != null)
         {

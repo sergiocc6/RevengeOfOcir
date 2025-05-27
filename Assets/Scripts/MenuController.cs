@@ -12,6 +12,9 @@ public class MenuController : MonoBehaviour
         StartCoroutine(SetSelectedUI());
     }
 
+    /// <summary>
+    /// Sets the default UI element as the currently selected object in the event system.
+    /// </summary>
     System.Collections.IEnumerator SetSelectedUI()
     {
         // Espera un frame para que el menú esté completamente activo

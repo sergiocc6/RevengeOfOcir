@@ -11,8 +11,9 @@ public class CheckpointController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // Check if the collider belongs to the player and update the checkpoint position in the game controller
         if (collision.CompareTag("Player"))
-        {
+        {            
             gameController.UpdateCheckpointPosition(transform.position);
         }
     }

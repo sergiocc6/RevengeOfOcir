@@ -10,15 +10,7 @@ public class SceneManagement : MonoBehaviour
 
     private void Start()
     {
-        //if (gameManager == null)
-        //    gameManager = FindObjectOfType<GameManager>();
-        //// Lo mismo para pauseMenuUI y settingsMenuUI si es necesario
 
-        //if (pauseMenuUI == null || settingsMenuUI == null)
-        //{
-        //    settingsMenuUI = FindObjectsByType<>
-        //    return;
-        //}
     }
 
     private void Update()
@@ -43,7 +35,6 @@ public class SceneManagement : MonoBehaviour
         Debug.Log("Retry");
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        //gameManager.isGameActive = true;
     }
 
     public void LoadMainMenu()
@@ -88,6 +79,7 @@ public class SceneManagement : MonoBehaviour
         {
             gameManager = GameObject.FindObjectOfType<GameManager>();
         }
+
         gameManager.isGameActive = false;
         pauseMenuUI.SetActive(false);
         settingMenu.SetActive(true);
