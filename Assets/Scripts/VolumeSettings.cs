@@ -8,6 +8,11 @@ public class VolumeSettings : MonoBehaviour
     public Slider musicSlider; // Reference to the UI Slider for music volume
     public Slider SFXSlider; // Reference to the UI Slider for SFX volume
 
+    void Awake()
+    {
+        //DontDestroyOnLoad(gameObject);
+    }
+
     private void Start()
     {
         if(PlayerPrefs.HasKey("musicVolume")) // Check if the volume setting exists

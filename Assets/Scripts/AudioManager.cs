@@ -18,6 +18,7 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Clips")]
     public AudioClip death;
     public AudioClip sword;
+    public AudioClip sword2;
     public AudioClip steps;
     public AudioClip jump;
     public AudioClip wallSlide;
@@ -25,12 +26,25 @@ public class AudioManager : MonoBehaviour
     public AudioClip skeletonAttack;
     public AudioClip coin;
     public AudioClip waterDrops;
+    public AudioClip monsterDeath;
+    public AudioClip axe;
+    public AudioClip thunder;
+
+    void Awake()
+    {
+        //DontDestroyOnLoad(gameObject);
+    }
 
     private void Start()
     {
         string currentSceneName = SceneManager.GetActiveScene().name;
         switch (currentSceneName)
         {
+            case "MainMenu":
+            case "MenuControllers":
+            case "Settings":
+                musicSource.clip = backgroundMenu;
+                break;
             case "FirstScene":
                 musicSource.clip = backgroundLevel1;
                 break;
@@ -41,7 +55,7 @@ public class AudioManager : MonoBehaviour
                 musicSource.clip = backgroundLevel1;
                 break;
         }
-        
+
         musicSource.Play();
     }
 

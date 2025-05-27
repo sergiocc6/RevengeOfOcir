@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SkeletonPatrol : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class SkeletonPatrol : MonoBehaviour
 
     [Header("Health")]
     public int maxHealth = 2;
+    private bool isDead = false;
 
     [Header("Movement and distances")]
     public bool facingLeft = true;
@@ -50,7 +52,7 @@ public class SkeletonPatrol : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameManager.isGameActive == false)
+        if (gameManager.isGameActive == false || isDead)
         {
             return;
         }
@@ -77,27 +79,6 @@ public class SkeletonPatrol : MonoBehaviour
                 //audioManager.PlaySFX(audioManager.skeletonSnarl);
                 audioManager.PlaySFX(audioManager.skeletonSnarl, 1f);
             }
-
-            //if (playerPosition.position.x > transform.position.x && facingLeft)
-            //{
-            //    transform.eulerAngles = new Vector3(0f, -180f, 0f);
-            //    facingLeft = false;
-            //}
-            //else if (playerPosition.position.x < transform.position.x && !facingLeft)
-            //{
-            //    transform.eulerAngles = new Vector3(0f, 0f, 0f);
-            //    facingLeft = true;
-            //}
-
-            //if (Vector2.Distance(transform.position, playerPosition.position) > attackRange)
-            //{
-            //    animator.SetBool("Attack1", false);
-            //    transform.position = Vector2.MoveTowards(transform.position, playerPosition.position, chaseSpeed * Time.deltaTime);
-            //}
-            //else
-            //{
-            //    animator.SetBool("Attack1", true);
-            //}
 
             // Determina dirección hacia el jugador
             float direction = playerPosition.position.x - transform.position.x;
@@ -210,7 +191,17 @@ public class SkeletonPatrol : MonoBehaviour
     void Die()
     {
         Debug.Log(this.transform.name + " died");
-        audioManager.PlayMusic(audioManager.backgroundLevel1);
+        isDead = true;
+
+        if (SceneManager.GetActiveScene().name == "FirstScene")
+        {
+            audioManager.PlayMusic(audioManager.backgroundLevel1);
+        }
+        else if (SceneManager.GetActiveScene().name == "Level2")
+        {
+            audioManager.PlayMusic(audioManager.backgroundLevel2);
+        }
+
         audioManager.PlaySFX(audioManager.skeletonSnarl, 1f);
         //animator.SetBool("Died", true);
 

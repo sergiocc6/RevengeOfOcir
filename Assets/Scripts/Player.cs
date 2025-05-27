@@ -162,7 +162,7 @@ public class Player : MonoBehaviour
                 float direction = isTouchingWallRight ? -1 : 1;
                 isWallJumping = true;
                 isTouchingWallLeft = !isTouchingWallRight;
-                rb.linearVelocity = new Vector2(direction * 10f, jumpSpeed * 0.8f);
+                rb.linearVelocity = new Vector2(direction * 10f, jumpSpeed * 1.3f);
                 facingRight = direction > 0;
                 transform.eulerAngles = facingRight ? new Vector3(0f, 0f, 0f) : new Vector3(0f, -180f, 0f);
                 wallSliding = false;
@@ -303,6 +303,7 @@ public class Player : MonoBehaviour
 
         if(collision.gameObject.tag == "Trap")
         {
+            if(maxHealth > 0)
             TouchTrap();
         }
 
@@ -361,6 +362,15 @@ public class Player : MonoBehaviour
                 //The patrol enemy get 1 point of damage
                 collInfo.gameObject.GetComponent<SkeletonPatrol>().TakeDamage(attackDamage);
             }
+            else if(collInfo.gameObject.GetComponent<Wizard>() != null)
+            {
+                //The wizard enemy get 1 point of damage and die
+                collInfo.gameObject.GetComponent<Wizard>().Death();
+            }
+            else if(collInfo.gameObject.GetComponent<Boss>() != null)
+            {
+                collInfo.gameObject.GetComponent<Boss>().TakeDamage(attackDamage);
+            }
         }
     }
 
@@ -386,10 +396,12 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int damage, bool fromTrap = false)
     {
+
         if(isShieldActive && !fromTrap)
         {
-            isShieldActive = false;
-            animator.SetBool("Shield", false);
+            animator.SetTrigger("ShieldBlock");
+            //isShieldActive = false;
+            //animator.SetBool("Shield", false);
             return;
         }
 

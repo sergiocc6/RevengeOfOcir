@@ -49,8 +49,8 @@ MonoBehaviour:
   musicSource: {fileID: 6779343117561932882}
   SFXSource: {fileID: 3813757580330510586}
   backgroundLevel1: {fileID: 8300000, guid: a259e9544e4a9af4e8fd5f4ec77fb038, type: 3}
-  backgroundLevel2: {fileID: 0}
-  backgroundMenu: {fileID: 0}
+  backgroundLevel2: {fileID: 8300000, guid: 0c2b5ef099ee88d47ac1848c43091f31, type: 3}
+  backgroundMenu: {fileID: 8300000, guid: 46784ed1e634585409fd0630b0b59947, type: 3}
   battle: {fileID: 8300000, guid: 26cd8d3f93a242e41a202ced4f626333, type: 3}
   epicBattle: {fileID: 8300000, guid: 89201dd0ddfb0d645819bf822796d1ec, type: 3}
   death: {fileID: 8300000, guid: 88e84aa97d2572f4e83ac45cd6df90b1, type: 3}
