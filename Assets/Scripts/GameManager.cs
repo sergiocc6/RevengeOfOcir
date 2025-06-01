@@ -9,7 +9,11 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public bool isGameActive = true;
+    public bool isDialogueActive = false;
     public int coinCount = 0;
+
+    public int level2_totalEnemies = 4;
+    public int level2_enemiesKilled = 0;
 
     void Awake()
     {

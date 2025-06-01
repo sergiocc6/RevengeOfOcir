@@ -55,6 +55,11 @@ public class SceneManagement : MonoBehaviour
         SceneManager.LoadScene("Level2");
     }
 
+    public void LoadEndGame()
+    {
+        SceneManager.LoadScene("EndGame");
+    }
+
     public void ResumePause()
     {
         Time.timeScale = 1;

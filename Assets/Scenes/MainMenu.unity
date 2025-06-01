@@ -365,8 +365,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 594.34766, y: 0}
-  m_SizeDelta: {x: 1027.73, y: 275.8023}
+  m_AnchoredPosition: {x: 686.98413, y: 0}
+  m_SizeDelta: {x: 1213.003, y: 356.726}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &331666124
 MonoBehaviour:
@@ -390,7 +390,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 37fd3969bc347b44c954c49246842f3f, type: 3}
-    m_FontSize: 160
+    m_FontSize: 200
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
@@ -398,8 +398,8 @@ MonoBehaviour:
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Revenge of Ocir
 --- !u!222 &331666125
@@ -1492,6 +1492,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6491565752555958935, guid: ac18ad79181ad684587f1788683d2718, type: 3}
+      propertyPath: endGame
+      value: 
+      objectReference: {fileID: 8300000, guid: 164d93a3a531e634298bd5f1a0dce5d9, type: 3}
+    - target: {fileID: 6491565752555958935, guid: ac18ad79181ad684587f1788683d2718, type: 3}
+      propertyPath: startGame
+      value: 
+      objectReference: {fileID: 8300000, guid: d0119692c22dfd6419f5b0eb291e7911, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

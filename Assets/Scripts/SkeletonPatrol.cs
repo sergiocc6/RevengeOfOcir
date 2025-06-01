@@ -214,7 +214,7 @@ public class SkeletonPatrol : MonoBehaviour
             Instantiate(coinPrefab, transform.position, Quaternion.identity);
         }
 
-
+        gameManager.level2_enemiesKilled += 1;
         Destroy(this.gameObject);
     }
 }

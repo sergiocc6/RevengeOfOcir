@@ -53,8 +53,11 @@ MonoBehaviour:
   backgroundMenu: {fileID: 8300000, guid: 46784ed1e634585409fd0630b0b59947, type: 3}
   battle: {fileID: 8300000, guid: 26cd8d3f93a242e41a202ced4f626333, type: 3}
   epicBattle: {fileID: 8300000, guid: 89201dd0ddfb0d645819bf822796d1ec, type: 3}
+  endGame: {fileID: 8300000, guid: 164d93a3a531e634298bd5f1a0dce5d9, type: 3}
+  startGame: {fileID: 8300000, guid: d0119692c22dfd6419f5b0eb291e7911, type: 3}
   death: {fileID: 8300000, guid: 88e84aa97d2572f4e83ac45cd6df90b1, type: 3}
   sword: {fileID: 8300000, guid: f17f892bb45951842ba1abaf7638d3da, type: 3}
+  sword2: {fileID: 8300000, guid: 1ed3f0c20d8e8474cb38a09800b4a3dc, type: 3}
   steps: {fileID: 8300000, guid: 7fbff6ba9d0efb94f90c72b43e9fce36, type: 3}
   jump: {fileID: 8300000, guid: bcf08a6a9f111a84a855db2ec936ff0c, type: 3}
   wallSlide: {fileID: 8300000, guid: f36d47d030421cf4eb72c37f0fa96a69, type: 3}
@@ -62,6 +65,11 @@ MonoBehaviour:
   skeletonAttack: {fileID: 8300000, guid: f5be822091a20f44ca32e130200d94fd, type: 3}
   coin: {fileID: 8300000, guid: e7bad17718ca9d9479d441dcf373bb61, type: 3}
   waterDrops: {fileID: 8300000, guid: 75bd5731d132f2e46915fe15c129e07a, type: 3}
+  monsterDeath: {fileID: 8300000, guid: 3999b242bfe7ef14c80f459c42595b27, type: 3}
+  axe: {fileID: 8300000, guid: 3ceed14792a989546b13ec6835d4e2bd, type: 3}
+  thunder: {fileID: 8300000, guid: 3106591cff0533840ad4f04bfb7916d6, type: 3}
+  magicDrop: {fileID: 8300000, guid: e61fd2b3fd429c743a7e913c612f0f2c, type: 3}
+  magicExplode: {fileID: 8300000, guid: 1978eb3b0f1a69e4b8d8028b8e1cd060, type: 3}
 --- !u!1 &6171040904002261334
 GameObject:
   m_ObjectHideFlags: 0

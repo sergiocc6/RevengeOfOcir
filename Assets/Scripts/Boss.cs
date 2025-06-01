@@ -198,7 +198,9 @@ public class Boss : MonoBehaviour
 
         // Disable the boss game object
         gameObject.SetActive(false);
-        
+
+        gameManager.level2_enemiesKilled += 1;
+
         Destroy(gameObject, 2f); // Destroy the boss after 2 seconds
     }
 

@@ -8,6 +8,8 @@ public class Wizard : MonoBehaviour
     public GameObject fireballPrefab;
     public Transform startPoint;
     public BoxCollider2D boxCollider2D;
+    public bool facingLeft = false;
+    public GameManager gameManager; // Reference to the GameManager
 
     // Horizontal detection range for the player
     public float detectionRange = 15f;
@@ -56,8 +58,20 @@ public class Wizard : MonoBehaviour
         if (playerTransform == null)
             return false;
 
-        float distanceX = Mathf.Abs(transform.position.x - playerTransform.position.x);
+        float distanceX = Mathf.Abs(playerTransform.position.x - transform.position.x);
         float distanceY = Mathf.Abs(transform.position.y - playerTransform.position.y);
+
+        if(playerTransform.position.x < transform.position.x && !facingLeft)
+        {
+            // If the player is to the left and the wizard is facing right, return false
+            return false;
+        }
+        else if(playerTransform.position.x > transform.position.x && facingLeft)
+        {
+            // If the player is to the right and the wizard is facing left, return false
+            return false;
+        }
+
         return (distanceX <= detectionRange && distanceY < 4f);
     }
 
@@ -82,6 +96,7 @@ public class Wizard : MonoBehaviour
     public void Death()
     {
         animator.SetTrigger("Die");
+        gameManager.level2_enemiesKilled += 1;
     }
 
     /// <summary>

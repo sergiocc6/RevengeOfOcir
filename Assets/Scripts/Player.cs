@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
@@ -107,7 +108,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (gameManager.isGameActive == false)
+        if (gameManager.isGameActive == false || gameManager.isDialogueActive)
         {
             return;
         }
@@ -261,8 +262,12 @@ public class Player : MonoBehaviour
                     rb.linearVelocity = new Vector2(movement * moveSpeed, -wallSlidingSpeed);
                 }
             }
-            else
+            else if (!gameManager.isDialogueActive)
+            {
+
+
                 rb.linearVelocity = new Vector2(movement * moveSpeed, rb.linearVelocity.y);
+            }
         }
     }
 
@@ -282,8 +287,15 @@ public class Player : MonoBehaviour
 
         if (collision.gameObject.tag == "Next Level")
         {
-            SceneManagement sceneManager = FindAnyObjectByType<SceneManagement>();
-            sceneManager.LoadSecondLevel();
+            SceneManagement sceneManagement = FindAnyObjectByType<SceneManagement>();
+            if (SceneManager.GetActiveScene().name == "FirstEscene")
+            {
+                sceneManagement.LoadSecondLevel();
+            }
+            else if (SceneManager.GetActiveScene().name == "Level2")
+            {
+                sceneManagement.LoadEndGame();
+            }
         }
 
         if (collision.gameObject.tag == "RightWall")
@@ -333,7 +345,7 @@ public class Player : MonoBehaviour
             animator.SetBool("Fall", false);
         }
 
-        if (collision.gameObject.tag == "")
+        if (collision.gameObject.tag == "Next Level")
         {
             touchNextLevel = true;
         }
@@ -433,13 +445,23 @@ public class Player : MonoBehaviour
 
         if (other.gameObject.tag == "Next Level")
         {
+            SceneManagement sceneManagement = FindAnyObjectByType<SceneManagement>();
+            if (SceneManager.GetActiveScene().name == "FirstScene")
+            {
+                sceneManagement.LoadSecondLevel();
+            }
+            else if (SceneManager.GetActiveScene().name == "Level2" && gameManager.level2_totalEnemies == gameManager.level2_enemiesKilled)
+            {
+                sceneManagement.LoadEndGame();
+            }
             Debug.Log("Victory!");
-            FindAnyObjectByType<SceneManagement>().LoadSecondLevel();
+            //FindAnyObjectByType<SceneManagement>().LoadSecondLevel();
         }
     }
 
     void Die()
     {
+        gameManager.isGameActive = false;
         animator.SetBool("Fall", false);
         Debug.Log("Player died");
         audioManager.PlayMusic(audioManager.death);

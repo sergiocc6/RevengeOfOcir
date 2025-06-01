@@ -14,6 +14,8 @@ public class AudioManager : MonoBehaviour
     public AudioClip backgroundMenu;
     public AudioClip battle;
     public AudioClip epicBattle;
+    public AudioClip endGame;
+    public AudioClip startGame;
 
     [Header("Audio Clips")]
     public AudioClip death;
@@ -37,16 +39,19 @@ public class AudioManager : MonoBehaviour
         string currentSceneName = SceneManager.GetActiveScene().name;
         switch (currentSceneName)
         {
-            case "MainMenu":
+            case "MainMenu":    
             case "MenuControllers":
             case "Settings":
-                musicSource.clip = backgroundMenu;
+                musicSource.clip = startGame;
                 break;
             case "FirstScene":
                 musicSource.clip = backgroundLevel1;
                 break;
             case "Level2":
                 musicSource.clip = backgroundLevel2;
+                break;
+            case "Endgame":
+                musicSource.clip = endGame;
                 break;
             default:
                 musicSource.clip = backgroundLevel1;
@@ -121,7 +126,7 @@ public class AudioManager : MonoBehaviour
     /// <param name="clip">The audio clip to be played. Cannot be null.</param>
     public void PlayMusic(AudioClip clip)
     {
-        if(musicSource.clip == clip && musicSource.isPlaying)
+        if (musicSource.clip == clip && musicSource.isPlaying)
             return; // If the same clip is already playing, do nothing
 
         musicSource.Stop();
